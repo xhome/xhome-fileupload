@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.xhome.xfileupload.core.dao.FileContentDAO">
+	
+	<cache/>
+	
+	<insert id="addFileContent" parameterType="org.xhome.xfileupload.FileContent" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO xhome_xfileupload_file_content (path, name, original, type, size, owner, modifier, created, modified, version, status)
+		VALUES(#{path}, #{name}, #{original}, #{type}, #{size}, #{owner}, #{modifier}, #{created}, #{modified}, #{version}, #{status})
+	</insert>
+	
+	<update id="updateFileContent" parameterType="org.xhome.xfileupload.FileContent">
+		UPDATE xhome_xfileupload_file_content
+		SET path = #{path}, name = #{name}, original = #{original}, type = #{type}, size = ${size},
+		    modifier = #{modifier}, modified = NOW(), version = version + 1, status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="lockFileContent" parameterType="org.xhome.xfileupload.FileContent">
+		UPDATE xhome_xfileupload_file_content
+		SET modifier = #{modifier}, modified = NOW(), version = version + 1, status = 5
+		WHERE id = #{id}
+	</update>
+	
+	<update id="unlockFileContent" parameterType="org.xhome.xfileupload.FileContent">
+		UPDATE xhome_xfileupload_file_content
+		SET modifier = #{modifier}, modified = NOW(), version = version + 1, status = 1
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteFileContent" parameterType="org.xhome.xfileupload.FileContent">
+		DELETE FROM xhome_xfileupload_file_content WHERE id = #{id}
+	</delete>
+	
+	<select id="isFileContentUpdateable" resultType="boolean" parameterType="org.xhome.xfileupload.FileContent">
+		SELECT COUNT(*) FROM xhome_xfileupload_file_content WHERE id = #{id} AND status != 10
+	</select>
+	
+	<select id="isFileContentLocked" resultType="boolean" parameterType="org.xhome.xfileupload.FileContent">
+		SELECT COUNT(*) FROM xhome_xfileupload_file_content WHERE id = #{id} AND status = 5
+	</select>
+	
+	<select id="isFileContentDeleteable" resultType="boolean" parameterType="org.xhome.xfileupload.FileContent">
+		SELECT COUNT(*) FROM xhome_xfileupload_file_content WHERE id = #{id} AND status != 10 AND status != 15
+	</select>
+	
+	<select id="queryFileContentById" resultType="org.xhome.xfileupload.FileContent" parameterType="long">
+		SELECT * FROM xhome_xfileupload_file_content WHERE id = #{id} LIMIT 1
+	</select>
+	
+	<sql id="restriction_tags">
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="parameters.path != null and parameters.path != ''">
+				AND path LIKE CONCAT('%',#{parameters.path},'%')
+			</if>
+			<if test="parameters.path_llike != null and parameters.path_llike != ''">
+				AND path LIKE CONCAT('%',#{parameters.path_llike})
+			</if>
+			<if test="parameters.path_rlike != null and parameters.path_rlike != ''">
+				AND path LIKE CONCAT(#{parameters.path_rlike},'%')
+			</if>
+			<if test="parameters.path_equal != null and parameters.path_equal != ''">
+				AND path = #{parameters.path_equal}
+			</if>
+			<if test="parameters.name != null and parameters.name != ''">
+                AND name LIKE CONCAT('%',#{parameters.name},'%')
+            </if>
+            <if test="parameters.name_llike != null and parameters.name_llike != ''">
+                AND name LIKE CONCAT('%',#{parameters.name_llike})
+            </if>
+            <if test="parameters.name_rlike != null and parameters.name_rlike != ''">
+                AND name LIKE CONCAT(#{parameters.name_rlike},'%')
+            </if>
+            <if test="parameters.name_equal != null and parameters.name_equal != ''">
+                AND name = #{parameters.name_equal}
+            </if>
+            <if test="parameters.original != null and parameters.original != ''">
+                AND original LIKE CONCAT('%',#{parameters.original},'%')
+            </if>
+            <if test="parameters.original_llike != null and parameters.original_llike != ''">
+                AND original LIKE CONCAT('%',#{parameters.original_llike})
+            </if>
+            <if test="parameters.original_rlike != null and parameters.original_rlike != ''">
+                AND original LIKE CONCAT(#{parameters.original_rlike},'%')
+            </if>
+            <if test="parameters.original_equal != null and parameters.original_equal != ''">
+                AND original = #{parameters.original_equal}
+            </if>
+            <if test="parameters.type != null and parameters.type != ''">
+                AND type LIKE CONCAT('%',#{parameters.type},'%')
+            </if>
+            <if test="parameters.type_llike != null and parameters.type_llike != ''">
+                AND type LIKE CONCAT('%',#{parameters.type_llike})
+            </if>
+            <if test="parameters.type_rlike != null and parameters.type_rlike != ''">
+                AND type LIKE CONCAT(#{parameters.type_rlike},'%')
+            </if>
+            <if test="parameters.type_equal != null and parameters.type_equal != ''">
+                AND type = #{parameters.type_equal}
+            </if>
+			<if test="parameters.status != null and parameters.status != ''">
+				AND status = #{parameters.status}
+			</if>
+			<if test="parameters.status_lt != null and parameters.status_lt != ''">
+				AND status &lt; #{parameters.status_lt}
+			</if>
+			<if test="parameters.status_le != null and parameters.status_le != ''">
+				AND status &lt;= #{parameters.status_le}
+			</if>
+			<if test="parameters.status_gt != null and parameters.status_gt != ''">
+				AND status &gt; #{parameters.status_gt}
+			</if>
+			<if test="parameters.status_ge != null and parameters.status_ge != ''">
+				AND status &gt;= #{parameters.status_ge}
+			</if>
+			<if test="parameters.id != null and parameters.id != ''">
+				AND id = #{parameters.id}
+			</if>
+			<if test="parameters.id_lt != null and parameters.id_lt != ''">
+				AND id &lt; #{parameters.id_lt}
+			</if>
+			<if test="parameters.id_le != null and parameters.id_le != ''">
+				AND id &lt;= #{parameters.id_le}
+			</if>
+			<if test="parameters.id_gt != null and parameters.id_gt != ''">
+				AND id &gt; #{parameters.id_gt}
+			</if>
+			<if test="parameters.id_ge != null and parameters.id_ge != ''">
+				AND id &gt;= #{parameters.id_ge}
+			</if>
+		</trim>
+	</sql>
+	
+	<select id="queryFileContents" resultType="org.xhome.xfileupload.FileContent" parameterType="org.xhome.db.query.QueryBase">
+		SELECT * FROM xhome_xfileupload_file_content
+		<include refid="restriction_tags"/>
+		ORDER BY id
+		LIMIT #{start}, #{limit}
+	</select>
+	
+	<select id="countFileContents" resultType="long" parameterType="org.xhome.db.query.QueryBase">
+		SELECT COUNT(*) FROM xhome_xfileupload_file_content
+		<include refid="restriction_tags"/>
+	</select>
+	
+</mapper>
