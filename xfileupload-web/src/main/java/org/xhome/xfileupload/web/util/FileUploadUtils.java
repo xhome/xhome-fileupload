@@ -184,6 +184,38 @@ public class FileUploadUtils {
     }
 
     /**
+     * 保存已移除的用户上传的文件信息（已处理）
+     * 
+     * @param session
+     * @param fileContents
+     */
+    public static void addRemovedFileContent(HttpSession session,
+                    List<FileContent> fileContents) {
+        if (session != null) {
+            List<FileContent> removedFileContents = getRemovedSessionFileContents(session);
+            if (removedFileContents == null) {
+                removedFileContents = new ArrayList<FileContent>();
+                session.setAttribute(FILE_CONTENTS_REMOVED_SESSION_KEY,
+                                removedFileContents);
+            }
+            removedFileContents.addAll(fileContents);
+        }
+    }
+
+    /**
+     * 保存已移除的用户上传的文件信息（已处理）
+     * 
+     * @param request
+     * @param fileContents
+     */
+    public static void addRemovedFileContent(HttpServletRequest request,
+                    List<FileContent> fileContents) {
+        if (request != null) {
+            addRemovedFileContent(request.getSession(), fileContents);
+        }
+    }
+
+    /**
      * 移除已保存的用户已上传文件信息
      * 
      * @param session
@@ -217,6 +249,43 @@ public class FileUploadUtils {
                     FileContent fileContent) {
         if (request != null) {
             removeFileContent(request.getSession(), fileContent);
+        }
+    }
+
+    /**
+     * 移除已保存的用户已上传文件信息
+     * 
+     * @param session
+     * @param fileContents
+     */
+    public static void removeFileContent(HttpSession session,
+                    List<FileContent> fileContents) {
+        if (session != null) {
+            // 移除Session中保存的记录
+            List<FileContent> sessionFileContents = getSessionFileContents(session);
+            if (sessionFileContents != null) {
+                sessionFileContents.removeAll(fileContents);
+            }
+            // 移除ServletContext中保存的记录
+            List<FileContent> servletContextFileContents = getServletContextFileContents(session);
+            if (servletContextFileContents != null) {
+                servletContextFileContents.removeAll(fileContents);
+            }
+            // 保存移除记录
+            addRemovedFileContent(session, fileContents);
+        }
+    }
+
+    /**
+     * 移除已保存的用户已上传文件信息
+     * 
+     * @param request
+     * @param fileContents
+     */
+    public static void removeFileContent(HttpServletRequest request,
+                    List<FileContent> fileContents) {
+        if (request != null) {
+            removeFileContent(request.getSession(), fileContents);
         }
     }
 
@@ -285,6 +354,44 @@ public class FileUploadUtils {
                     FileContentService fileContentService) {
         if (request != null) {
             cleanFileContent(request.getSession(), fileContentService);
+        }
+    }
+
+    /**
+     * 删除已上传的文件
+     * 
+     * @param fileContent
+     * @param request
+     */
+    public static void deleteFileContent(FileContent fileContent,
+                    HttpServletRequest request) {
+        if (request != null) {
+            deleteFileContent(fileContent, request.getSession());
+        }
+    }
+
+    /**
+     * 删除已上传的文件
+     * 
+     * @param fileContent
+     * @param session
+     */
+    public static void deleteFileContent(FileContent fileContent,
+                    HttpSession session) {
+        if (session == null) {
+            return;
+        }
+
+        ServletContext context = session.getServletContext();
+        String savePath = context.getRealPath(FileUploadAction.SAVE_PATH);
+        File path = new File(savePath);
+        File file = new File(path, fileContent.getPath() + File.separator
+                        + fileContent.getName());
+        try {
+            FileUtils.deleteFile(file);
+            logger.info("delete uploaded file {}", file.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 

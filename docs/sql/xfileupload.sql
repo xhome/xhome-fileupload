@@ -22,7 +22,7 @@ GRANT SELECT,INSERT,UPDATE,DELETE,EXECUTE ON xfileupload.* TO 'xfileupload'@'loc
 /*==============================================================*/
 CREATE TABLE xhome_xfileupload_file_content
 (
-   id                   INTEGER NOT NULL AUTO_INCREMENT COMMENT '上传文件记录ID',
+   id                   BIGINT NOT NULL AUTO_INCREMENT COMMENT '上传文件记录ID',
    path                 VARCHAR(255) NOT NULL COMMENT '文件保存路径',
    name                 VARCHAR(32) NOT NULL COMMENT '上传文件名',
    original             VARCHAR(255) NOT NULL COMMENT '原始文件名',
