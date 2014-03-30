@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xhome.util.FileUtils;
+import org.xhome.common.util.FileUtils;
 import org.xhome.xauth.User;
 import org.xhome.xauth.web.util.AuthUtils;
 import org.xhome.xfileupload.FileContent;

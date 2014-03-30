@@ -12,7 +12,6 @@
         <xauth-web.version>1.0</xauth-web.version>
         <xhome-web.version>1.0</xhome-web.version>
         <xhome-crypto.version>1.0</xhome-crypto.version>
-        <xhome-util.version>1.0</xhome-util.version>
         <xhome-common.version>1.0</xhome-common.version>
         <jackson-databind.version>2.3.1</jackson-databind.version>
         <spring.version>3.2.4.RELEASE</spring.version>
@@ -47,12 +46,6 @@
             <groupId>org.xhome</groupId>
             <artifactId>xhome-web</artifactId>
             <version>${xhome-web.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.xhome</groupId>
-            <artifactId>xhome-util</artifactId>
-            <version>${xhome-util.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
