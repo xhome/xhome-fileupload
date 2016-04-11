@@ -20,7 +20,7 @@
     </properties>
   
     <build>
-        <finalName>xhome-blog-${project.version}</finalName>
+        <finalName>xhome-fileupload-${project.version}</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>

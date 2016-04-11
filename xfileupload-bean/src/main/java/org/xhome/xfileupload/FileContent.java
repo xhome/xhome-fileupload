@@ -18,6 +18,7 @@ public class FileContent extends Base {
     private String            name             = "";                  // 上传文件名
     private String            original         = "";                  // 原始文件名
     private String            type             = "";                  // 文件类型
+    private String            md5              = "";
     private long              size             = 0;                   // 文件大小
 
     /**
@@ -78,6 +79,14 @@ public class FileContent extends Base {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 
     /**

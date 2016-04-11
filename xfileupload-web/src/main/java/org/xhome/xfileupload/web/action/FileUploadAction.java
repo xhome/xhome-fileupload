@@ -7,11 +7,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,7 +66,7 @@ public class FileUploadAction {
 
     // 文件允许格式
     private String[]           allowFiles             = { ".rar", ".doc",
-                    ".docx", ".zip", ".pdf", ".txt", ".swf", ".wmv", ".gif",
+                    ".docx", "xls", "xlsx", ".zip", ".pdf", ".txt", ".swf", ".wmv", ".gif",
                     ".png", ".jpg", ".jpeg", ".bmp"  };
 
     private Logger             logger                 = LoggerFactory.getLogger(this
@@ -430,7 +432,7 @@ public class FileUploadAction {
             }
         }
 
-        String saveFolder = "", fileName = "", fileType = "";
+        String saveFolder = "", fileName = "", fileType = "", md5 = "";
         long fileSize = 0;
         File saveFile = null;
         if (allow) {
@@ -449,19 +451,27 @@ public class FileUploadAction {
                 String savePath = this.createSavePath(request, saveFolder);
                 saveFile = new File(savePath, fileName);
 
+                MessageDigest digest = null;
+                try {
+                    digest = MessageDigest.getInstance("MD5");
+                } catch (Exception e) {
+                }
+
                 FileOutputStream out = new FileOutputStream(saveFile);
                 int len = 0;
                 byte[] bytes = new byte[BUFSIZE];
                 while (-1 != (len = in.read(bytes))) {
                     out.write(bytes, 0, len);
                     fileSize += len;
+                    digest.update(bytes, 0, len);
                 }
                 out.flush();
                 out.close();
                 in.close();
 
-                logger.info("save upload file {} to {}", originalName,
-                                saveFile.getAbsolutePath());
+                BigInteger bigInt = new BigInteger(1, digest.digest());
+                md5 = bigInt.toString(16);
+                logger.info("save upload file {} to {}", originalName, saveFile.getAbsolutePath());
             } catch (Exception e) {
                 logger.error("fail to upload file " + originalName, e);
                 status = Status.ERROR;
@@ -479,12 +489,12 @@ public class FileUploadAction {
             fileContent.setOriginal(originalName);
             fileContent.setType(fileType);
             fileContent.setSize(fileSize);
+            fileContent.setMd5(md5);
 
             User oper = AuthUtils.getCurrentUser();
             AuthUtils.setOwner(fileContent);
             AuthUtils.setModifier(fileContent);
-            status = (short) fileContentService.addFileContent(oper,
-                            fileContent);
+            status = (short) fileContentService.addFileContent(oper, fileContent);
             if (status != Status.SUCCESS) {
                 // 删除已上传的文件
                 try {

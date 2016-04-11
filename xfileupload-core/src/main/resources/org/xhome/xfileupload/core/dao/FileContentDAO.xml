@@ -6,13 +6,13 @@
 	<cache/>
 	
 	<insert id="addFileContent" parameterType="org.xhome.xfileupload.FileContent" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO xhome_xfileupload_file_content (path, name, original, type, size, owner, modifier, created, modified, version, status)
-		VALUES(#{path}, #{name}, #{original}, #{type}, #{size}, #{owner}, #{modifier}, #{created}, #{modified}, #{version}, #{status})
+		INSERT INTO xhome_xfileupload_file_content (path, name, original, type, md5, size, owner, modifier, created, modified, version, status)
+		VALUES(#{path}, #{name}, #{original}, #{type}, #{md5}, #{size}, #{owner}, #{modifier}, #{created}, #{modified}, #{version}, #{status})
 	</insert>
 	
 	<update id="updateFileContent" parameterType="org.xhome.xfileupload.FileContent">
 		UPDATE xhome_xfileupload_file_content
-		SET path = #{path}, name = #{name}, original = #{original}, type = #{type}, size = ${size},
+		SET path = #{path}, name = #{name}, original = #{original}, type = #{type}, md5 = #{md5}, size = ${size},
 		    modifier = #{modifier}, modified = NOW(), version = version + 1, status = #{status}
 		WHERE id = #{id}
 	</update>
